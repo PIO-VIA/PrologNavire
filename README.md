@@ -253,13 +253,6 @@ class ModernPrologEngine {
 - Développement d'interfaces modernes
 
 
-## 🙏 Remerciements
-
-- 🏫 **ENSP Yaoundé** pour le cadre pédagogique
-- 🏭 **Port Autonome de Kribi** pour le contexte réel
-- 👨‍🏫 **Équipe enseignante** pour l'encadrement
-- 🌍 **Communauté open source** pour les technologies
-
 ## 📞 Contact
 
 Pour toute question ou suggestion :
