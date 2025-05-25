@@ -9,19 +9,14 @@
 // Instance globale du moteur Prolog
 let prologEngine;
 
-/**
- * Initialisation de l'application
- */
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚢 Système Expert Prolog initialisé');
     
-    // Créer l'instance du moteur Prolog
     prologEngine = new ModernPrologEngine();
     
-    // Initialiser les animations
     initializeAnimations();
     
-    // Configurer les événements
     setupEventListeners();
     
     console.log('📚 Base de connaissances chargée');
@@ -44,7 +39,6 @@ function initializeAnimations() {
  * Configure les écouteurs d'événements
  */
 function setupEventListeners() {
-    // Validation en temps réel des champs
     const inputs = document.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.addEventListener('change', validateInput);
@@ -60,7 +54,6 @@ function validateInput(event) {
     const input = event.target;
     const value = input.value;
     
-    // Validation spécifique selon le type de champ
     switch(input.id) {
         case 'shipLength':
             validateNumericRange(input, 50, 400, 'Longueur doit être entre 50 et 400 mètres');
@@ -120,7 +113,7 @@ function executerRequeteProlog() {
     // Récupérer et valider les données du formulaire
     const donneesNavire = collecterDonneesFormulaire();
     if (!donneesNavire) {
-        return; // Erreur de validation
+        return; 
     }
     
     // Préparer l'identifiant du navire pour Prolog
@@ -129,14 +122,11 @@ function executerRequeteProlog() {
     // Nettoyer les anciens faits du navire
     prologEngine.clearNavireFacts(navireId);
     
-    // Asserter les nouveaux faits dans la base de connaissances
     prologEngine.assertFacts(navireId, donneesNavire);
     
-    // Exécuter l'analyse complète
     const resultatsAnalyse = prologEngine.analyseComplete(navireId);
     const requetesProlog = prologEngine.generatePrologQueries(navireId);
     
-    // Afficher les résultats
     afficherResultatsAnalyse(donneesNavire, navireId, resultatsAnalyse, requetesProlog);
     
     console.log('✅ Analyse terminée');

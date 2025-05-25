@@ -18,7 +18,6 @@
             overflow-x: hidden;
         }
 
-        /* Animations de base */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -802,15 +801,12 @@
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 
-                // Taille aléatoire
                 const size = Math.random() * 4 + 1;
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
                 
-                // Position horizontale aléatoire
                 particle.style.left = Math.random() * 100 + '%';
                 
-                // Délai d'animation aléatoire
                 particle.style.animationDelay = Math.random() * 20 + 's';
                 particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
                 
@@ -873,7 +869,6 @@
                 mobileMenu.classList.toggle('active');
                 menuOverlay.classList.toggle('active');
                 
-                // Empêcher le scroll quand le menu est ouvert
                 if (mobileMenu.classList.contains('active')) {
                     document.body.style.overflow = 'hidden';
                 } else {
@@ -888,16 +883,13 @@
             // Fermer le menu quand on clique sur un lien
             mobileLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    // Si c'est un lien vers une section
                     if (this.getAttribute('href').startsWith('#')) {
                         e.preventDefault();
                         const targetId = this.getAttribute('href');
                         const targetElement = document.querySelector(targetId);
                         
-                        // Fermer le menu d'abord
                         toggleMenu();
                         
-                        // Puis naviguer vers la section après un délai
                         setTimeout(() => {
                             if (targetElement) {
                                 targetElement.scrollIntoView({
@@ -907,20 +899,17 @@
                             }
                         }, 300);
                     } else {
-                        // Pour les liens externes, fermer juste le menu
                         toggleMenu();
                     }
                 });
             });
 
-            // Fermer le menu avec la touche Escape
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
                     toggleMenu();
                 }
             });
 
-            // Fermer le menu automatiquement si on redimensionne vers desktop
             window.addEventListener('resize', function() {
                 if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
                     toggleMenu();
@@ -944,7 +933,6 @@
             }, 100);
         }
 
-        // Navigation fluide (pour desktop)
         function smoothNavigation() {
             const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
             
@@ -964,15 +952,13 @@
             });
         }
 
-        // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            // Créer les particules
             createParticles();
             
             // Configurer les animations
             animateStartButton();
             smoothNavigation();
-            initMobileMenu(); // 🆕 Initialiser le menu mobile
+            initMobileMenu();
             
             // Démarrer l'effet de typing après un court délai
             setTimeout(typingEffect, 500);
@@ -980,13 +966,11 @@
             console.log('🚢 Page d\'accueil chargée - Menu responsive activé !');
         });
 
-        // Event listeners
         window.addEventListener('scroll', function() {
             animateOnScroll();
             parallaxEffect();
         });
 
-        // Animation initiale des éléments visibles
         window.addEventListener('load', animateOnScroll);
 
         // Effet de survol sur les cartes

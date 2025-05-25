@@ -13,13 +13,8 @@ class ModernPrologEngine {
         this.initializeKnowledgeBase();
     }
 
-    /**
-     * Initialise la base de connaissances avec les faits et règles du port
-     */
+    
     initializeKnowledgeBase() {
-        // ====================================
-        // FAITS - Caractéristiques du Port de Kribi
-        // ====================================
         
         // Quais disponibles
         this.addFact('quai', ['q1', 350, 'prioritaire']);
@@ -35,10 +30,7 @@ class ModernPrologEngine {
         this.addFact('zone_electrifiee', ['secteur_a']);
         this.addFact('zone_electrifiee', ['secteur_b']);
 
-        // ====================================
-        // RÈGLES D'INFÉRENCE PROLOG
-        // ====================================
-        
+     
         // R1: Attribution du quai selon la longueur
         // assigner_quai(Navire, q1) :- longueur(Navire, L), L > 300.
         this.addRule('assigner_quai', (navire) => {
@@ -279,6 +271,3 @@ class ModernPrologEngine {
     }
 }
 
-// Export pour utilisation dans d'autres fichiers
-// (Commenté car nous sommes dans un environnement navigateur)
-// module.exports = ModernPrologEngine;
