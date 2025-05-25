@@ -47,7 +47,7 @@ Ce projet implémente un **système expert basé sur Prolog** pour automatiser l
 git clone https://github.com/PIO-VIA/PrologNavire.git
 
 # Aller dans le dossier
-cd systeme-expert-kribi
+cd PrologNavire
 
 # Ouvrir dans le navigateur
 open index.html
