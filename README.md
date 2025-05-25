@@ -44,7 +44,7 @@ Ce projet implémente un **système expert basé sur Prolog** pour automatiser l
 
 ```bash
 # Cloner le repository
-git clone https://github.com/votre-username/systeme-expert-kribi.git
+git clone https://github.com/PIO-VIA/PrologNavire.git
 
 # Aller dans le dossier
 cd systeme-expert-kribi
