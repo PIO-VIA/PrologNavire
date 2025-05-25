@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système Expert Prolog - Port de Kribi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animations de base */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Header Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 20px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Menu Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Menu mobile */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.3em;
+            font-weight: 500;
+            padding: 15px 30px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 80%;
+        }
+
+        .mobile-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        /* Overlay pour fermer le menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 50px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            color: white;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 3s infinite;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .hero .description {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.8;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            text-decoration: none;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+        }
+
+        /* Features Section */
+        .features {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 80px 20px;
+            margin: 50px 20px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 60px;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        .features h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .tech-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tech-stack h2 {
+            font-size: 2.5em;
+            margin-bottom: 50px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .tech-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .tech-item .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .tech-item h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        /* Rules Section */
+        .rules-preview {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 80px 20px;
+            margin: 50px 20px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .rules-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .rules-preview h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 50px;
+            color: #2c3e50;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .rule-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #6c63ff;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .rule-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.2);
+        }
+
+        .rule-title {
+            color: #6c63ff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .rule-content {
+            color: #495057;
+        }
+
+        /* Call to Action Final */
+        .final-cta {
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .final-cta h2 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .final-cta p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .footer p {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero .subtitle {
+                font-size: 1.2em;
+            }
+
+            /* Masquer le menu normal et afficher le hamburger */
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-button {
+                padding: 15px 30px;
+                font-size: 1.1em;
+            }
+
+            .logo {
+                font-size: 1.3em;
+            }
+
+            .features h2 {
+                font-size: 2.2em;
+            }
+
+            .final-cta h2 {
+                font-size: 2.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1em;
+            }
+
+            .hero .description {
+                font-size: 1em;
+            }
+
+            .mobile-menu {
+                width: 100%;
+                right: -100%;
+            }
+
+            .mobile-menu.active {
+                right: 0;
+            }
+
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logo {
+                font-size: 1.1em;
+            }
+        }
+
+        /* Animations avancées */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float-particle 20s infinite linear;
+        }
+
+        @keyframes float-particle {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particules animées -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🚢 Port Expert AI</div>
+            <div class="nav-links">
+                <a href="#features">Fonctionnalités</a>
+                <a href="#technology">Technologie</a>
+                <a href="#rules">Règles Prolog</a>
+                <a href="#start">Commencer</a>
+            </div>
+            <!-- Menu Hamburger -->
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Mobile -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#features">🎯 Fonctionnalités</a>
+        <a href="#technology">🛠️ Technologie</a>
+        <a href="#rules">📋 Règles Prolog</a>
+        <a href="#start">🚀 Commencer</a>
+    </div>
+
+    <!-- Section Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🚢 Système Expert Prolog</h1>
+            <p class="subtitle">Intelligence Artificielle pour la Planification Portuaire</p>
+            <p class="description">
+                Automatisez la gestion logistique du <strong>Port Autonome de Kribi</strong> grâce à un système expert basé sur Prolog. 
+                Optimisez l'attribution des quais, calculez les ressources nécessaires et garantissez la sécurité des opérations portuaires.
+            </p>
+            <a href="page.html" class="cta-button" id="startButton">
+                🚀 Commencer l'Analyse
+            </a>
+        </div>
+    </section>
+
+    <!-- Section Fonctionnalités -->
+    <section class="features fade-in" id="features">
+        <div class="features-container">
+            <h2>🎯 Fonctionnalités Intelligentes</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🧠</span>
+                    <h3>Intelligence Artificielle</h3>
+                    <p>Moteur d'inférence Prolog simulé qui applique automatiquement les règles logiques pour une prise de décision optimale en temps réel.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">⚓</span>
+                    <h3>Attribution Automatique</h3>
+                    <p>Attribution intelligente des quais selon la taille du navire, optimisation des portiques et calcul précis des durées d'opération.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🛡️</span>
+                    <h3>Sécurité Garantie</h3>
+                    <p>Vérification automatique des contraintes de sécurité : profondeur, météo, marchandises dangereuses et procédures spéciales.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3>Analyse Complète</h3>
+                    <p>Rapports détaillés avec recommandations, estimations de durée et visualisation des requêtes Prolog en temps réel.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Traitement Rapide</h3>
+                    <p>Analyse instantanée des navires avec interface moderne, responsive et résultats formatés de manière professionnelle.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🔧</span>
+                    <h3>Extensible</h3>
+                    <p>Architecture modulaire permettant l'ajout de nouvelles règles, types de navires et intégration avec d'autres systèmes portuaires.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Stack Technologique -->
+    <section class="tech-stack fade-in" id="technology">
+        <div class="tech-container">
+            <h2>🛠️ Technologies Utilisées</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="icon">🧠</div>
+                    <h3>Prolog</h3>
+                    <p>Logique d'inférence</p>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">⚡</div>
+                    <h3>JavaScript</h3>
+                    <p>Moteur d'exécution</p>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">🎨</div>
+                    <h3>CSS3</h3>
+                    <p>Design moderne</p>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">📱</div>
+                    <h3>HTML5</h3>
+                    <p>Interface utilisateur</p>
+                </div>
+                <div class="tech-item">
+                    <div class="icon">🚀</div>
+                    <h3>Responsive</h3>
+                    <p>Multi-plateforme</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Règles Prolog -->
+    <section class="rules-preview fade-in" id="rules">
+        <div class="rules-container">
+            <h2>📋 Règles d'Inférence Prolog</h2>
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <div class="rule-title">R1 : Attribution du Quai</div>
+                    <div class="rule-content">
+                        assigner_quai(Navire, q1) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;longueur(Navire, L), L > 300.
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-title">R2 : Vérification Chenaux</div>
+                    <div class="rule-content">
+                        verifier_chenaux(Navire) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;tirant_eau(Navire, T), T > 15.
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-title">R3 : Portiques Requis</div>
+                    <div class="rule-content">
+                        portiques_requis(Navire, P) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;conteneurs(Navire, C), C > 3000.
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-title">R4 : Zone Électrifiée</div>
+                    <div class="rule-content">
+                        zone_electrifiee_requise(Navire) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;type_cargo(Navire, refrigeree).
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-title">R5 : Report Accostage</div>
+                    <div class="rule-content">
+                        reporter_accostage(Navire) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;meteo(Navire, defavorable).
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-title">R6 : Sécurité Renforcée</div>
+                    <div class="rule-content">
+                        securite_renforcee(Navire) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;type_cargo(Navire, dangereuse).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Final -->
+    <section class="final-cta fade-in" id="start">
+        <h2>🎯 Prêt à Optimiser Votre Port ?</h2>
+        <p>
+            Découvrez la puissance de l'Intelligence Artificielle appliquée à la logistique portuaire. 
+            Testez notre système expert et voyez comment Prolog peut révolutionner la gestion de votre terminal.
+        </p>
+        <a href="page.html" class="cta-button">
+            🚀 Lancer le Système Expert
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>École Nationale Supérieure Polytechnique de Yaoundé</h3>
+            <p>
+                <strong>Projet :</strong> Système Formel et Intelligence Artificielle <br>
+                copyright &copy; 2025
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Animation des éléments au scroll
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.fade-in');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Création des particules animées
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Taille aléatoire
+                const size = Math.random() * 4 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Position horizontale aléatoire
+                particle.style.left = Math.random() * 100 + '%';
+                
+                // Délai d'animation aléatoire
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Effet de parallaxe sur le scroll
+        function parallaxEffect() {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.hero-content');
+            
+            parallaxElements.forEach(element => {
+                const speed = 0.5;
+                element.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        }
+
+        // Animation du bouton de démarrage
+        function animateStartButton() {
+            const button = document.getElementById('startButton');
+            
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.05)';
+                this.style.boxShadow = '0 15px 40px rgba(255, 107, 107, 0.6)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.boxShadow = '0 10px 30px rgba(255, 107, 107, 0.4)';
+            });
+            
+            // Effet de clic
+            button.addEventListener('click', function(e) {
+                // Animation de transition
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+                
+                // Redirection après animation
+                setTimeout(() => {
+                    window.location.href = 'page.html';
+                }, 300);
+                
+                e.preventDefault();
+            });
+        }
+
+        // Navigation mobile (hamburger menu)
+        function initMobileMenu() {
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const mobileLinks = document.querySelectorAll('.mobile-menu a');
+
+            // Ouvrir/fermer le menu
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                menuOverlay.classList.toggle('active');
+                
+                // Empêcher le scroll quand le menu est ouvert
+                if (mobileMenu.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
+
+            // Event listeners
+            hamburger.addEventListener('click', toggleMenu);
+            menuOverlay.addEventListener('click', toggleMenu);
+
+            // Fermer le menu quand on clique sur un lien
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Si c'est un lien vers une section
+                    if (this.getAttribute('href').startsWith('#')) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
+                        
+                        // Fermer le menu d'abord
+                        toggleMenu();
+                        
+                        // Puis naviguer vers la section après un délai
+                        setTimeout(() => {
+                            if (targetElement) {
+                                targetElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        }, 300);
+                    } else {
+                        // Pour les liens externes, fermer juste le menu
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // Fermer le menu avec la touche Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                    toggleMenu();
+                }
+            });
+
+            // Fermer le menu automatiquement si on redimensionne vers desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
+                    toggleMenu();
+                }
+            });
+        }
+
+        // Effet de typing pour le titre
+        function typingEffect() {
+            const title = document.querySelector('.hero h1');
+            const text = title.textContent;
+            title.textContent = '';
+            
+            let i = 0;
+            const timer = setInterval(() => {
+                title.textContent += text.charAt(i);
+                i++;
+                if (i > text.length - 1) {
+                    clearInterval(timer);
+                }
+            }, 100);
+        }
+
+        // Navigation fluide (pour desktop)
+        function smoothNavigation() {
+            const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Créer les particules
+            createParticles();
+            
+            // Configurer les animations
+            animateStartButton();
+            smoothNavigation();
+            initMobileMenu(); // 🆕 Initialiser le menu mobile
+            
+            // Démarrer l'effet de typing après un court délai
+            setTimeout(typingEffect, 500);
+            
+            console.log('🚢 Page d\'accueil chargée - Menu responsive activé !');
+        });
+
+        // Event listeners
+        window.addEventListener('scroll', function() {
+            animateOnScroll();
+            parallaxEffect();
+        });
+
+        // Animation initiale des éléments visibles
+        window.addEventListener('load', animateOnScroll);
+
+        // Effet de survol sur les cartes
+        document.querySelectorAll('.feature-card, .tech-item, .rule-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système Expert Prolog - Planification Navire</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header animated">
+            <h1>🚢 SYSTÈME EXPERT PROLOG</h1>
+            <h2>Intelligence Artificielle pour la Planification Portuaire</h2>
+            <p>Port Autonome de Kribi - Moteur d'inférence logique avancé</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="section animated">
+                <h2>🧠 Base de Connaissances Prolog</h2>
+                
+                <div class="prolog-rules">
+                    <div class="rule-title">📋 FAITS - Caractéristiques du Port</div>
+                    <div class="rule-content">
+                        quai(q1, 350, prioritaire).<br>
+                        quai(q2, 280, standard).<br>
+                        quai(q3, 200, standard).<br>
+                        profondeur_maximum(16).<br>
+                        portiques_disponibles(4).
+                    </div>
+                </div>
+
+                <div class="prolog-rules">
+                    <div class="rule-title">⚡ RÈGLES D'INFÉRENCE</div>
+                    <div class="rule-content">
+                        assigner_quai(Navire, q1) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;longueur(Navire, L), L > 300.<br><br>
+                        
+                        verifier_chenaux(Navire) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;tirant_eau(Navire, T), T > 15.<br><br>
+                        
+                        portiques_requis(Navire, P) :-<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;conteneurs(Navire, C), C > 3000.
+                    </div>
+                </div>
+
+                <div class="facts-grid">
+                    <div class="fact-card">
+                        <div class="fact-label">Quais</div>
+                        <div class="fact-value">3</div>
+                    </div>
+                    <div class="fact-card">
+                        <div class="fact-label">Portiques</div>
+                        <div class="fact-value">4</div>
+                    </div>
+                    <div class="fact-card">
+                        <div class="fact-label">Profondeur Max</div>
+                        <div class="fact-value">16m</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section animated">
+                <h2>📝 Saisie des Données</h2>
+                
+                <div class="form-group">
+                    <label for="shipName">🚢 Nom du Navire:</label>
+                    <input type="text" id="shipName" value="MSC Kristina" placeholder="Ex: MSC Kristina">
+                </div>
+                
+                <div class="form-group">
+                    <label for="shipLength">📏 Longueur (mètres):</label>
+                    <input type="number" id="shipLength" value="320" min="50" max="400">
+                </div>
+                
+                <div class="form-group">
+                    <label for="shipDraft">⚓ Tirant d'eau (mètres):</label>
+                    <input type="number" id="shipDraft" value="14.5" min="5" max="20" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="containerCount">📦 Conteneurs (EVP):</label>
+                    <input type="number" id="containerCount" value="3500" min="100" max="20000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cargoType">📋 Type de marchandise:</label>
+                    <select id="cargoType">
+                        <option value="generale">Marchandise générale</option>
+                        <option value="refrigeree">Marchandise réfrigérée</option>
+                        <option value="dangereuse">Marchandise dangereuse</option>
+                        <option value="mixte">Mixte</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="weather">🌤️ Conditions météo:</label>
+                    <select id="weather">
+                        <option value="favorable">Favorable</option>
+                        <option value="moyenne">Moyenne</option>
+                        <option value="defavorable">Défavorable</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="executerRequeteProlog()">
+                    🔍 EXÉCUTER L'ANALYSE PROLOG
+                </button>
+            </div>
+        </div>
+
+        <div id="resultats" class="results hidden animated">
+            <h2>🎯 Résultats de l'Analyse Prolog</h2>
+            <div id="contenuResultats"></div>
+        </div>
+    </div>
+
+    <script src="prolog-engine.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
