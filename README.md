@@ -8,7 +8,7 @@
 
 **Intelligence Artificielle pour la Planification Portuaire**
 
-[🚀 Demo Live](https://prolog-navire.vercel.app/) | [📖 Documentation](#fonctionnalités) | [🎯 Fonctionnalités](#fonctionnalités) | [⚡ Installation](#installation)
+[🚀 Demo Live](https://prolog-navire.vercel.app/) | [📖 Documentation](#fonctionnalités) | [🎯 Fonctionnalités](#fonctionnalités) | [⚡ Installation](#⚡ installation)
 
 
 
